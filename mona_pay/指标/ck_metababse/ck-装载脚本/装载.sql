@@ -1,4 +1,102 @@
-load_middle_table_mona_user_info_display="
+--hive建表
+drop table if exists middle_table.mona_user_info_display;
+create table middle_table.mona_user_info_display
+(
+    `stat_date`                      date,
+    `uid`                            string,
+    `is_active_user`                 int,
+    `is_new_user`                    int,
+    `reg_date`                       date,
+    `reg_channel`                    string,
+    `retention_days`                 int,
+    `use_bot_count`                  int,
+    `chat_round_count`               int,
+    `rewriting_count`                int,
+    `rewriting_count_distinct`       int,
+    `session_count`                  int,
+    `chat_times`                     decimal(16, 2),
+    `lastest_exp`                    string,
+    `is_user_charge`                 int,
+    `is_user_charge_history`         int,
+    `first_user_charge_time_history` date,
+    `first_user_charge_time_type`    string,
+    `is_user_charge_status`          int,
+    `is_user_charge_status_standard` int,
+    `is_user_charge_status_premium`  int,
+    `standard_buy_count`             int,
+    `premium_buy_count`              int,
+    `is_user_charge_status_money`    decimal(16, 2),
+    `is_user_charge_money`           decimal(16, 2),
+    `is_user_charge_standard`        int,
+    `is_user_charge_premium`         int,
+    `user_charge_type`               string,
+    `is_chat_intercepted`            int,
+    `is_create_bot_intercepted`      int,
+    `is_user_renew`                  int,
+    `is_user_over_range`             int,
+    `user_over_type`                 string,
+    `is_user_over_type_bot_creation` int,
+    `is_user_over_type_chat`         int,
+    `create_bot_count`               int,
+    `total_tokens`                  bigint,
+    `input_tokens`                  bigint,
+    `output_tokens`                 bigint
+) USING org.apache.spark.sql.jdbc OPTIONS (
+    url "jdbc:clickhouse://172.26.0.1:8123/mona",
+    dbtable "mona.mona_user_info_display",
+    driver "com.clickhouse.jdbc.ClickHouseDriver",
+    user "default",
+    password "SlrYXPpGOKDq",
+    useSSL "false"
+);
+---------------------------------------------------------
+drop table if exists mona.mona_user_info_display;
+CREATE TABLE IF NOT EXISTS mona.mona_user_info_display
+(
+    `stat_date`                      date,
+    `uid`                            varchar(50),
+    `is_active_user`                 int,
+    `is_new_user`                    int,
+    `reg_date`                       date,
+    `reg_channel`                    varchar(50),
+    `retention_days`                 int,
+    `use_bot_count` Nullable(int),
+    `chat_round_count` Nullable(int),
+    `rewriting_count` Nullable(int),
+    `rewriting_count_distinct` Nullable(int),
+    `session_count` Nullable(int),
+    `chat_times` Nullable(decimal(16, 2)),
+    `lastest_exp` Nullable(varchar(50)),
+    `is_user_charge`                 int,
+    `is_user_charge_history`         int,
+    `first_user_charge_time_history` Nullable(date),
+    `first_user_charge_time_type` Nullable(varchar(50)),
+    `is_user_charge_status`          int,
+    `is_user_charge_status_standard` int,
+    `is_user_charge_status_premium`  int,
+    `standard_buy_count`             int,
+    `premium_buy_count`              int,
+    `is_user_charge_status_money`    decimal(16, 2),
+    `is_user_charge_money`           decimal(16, 2),
+    `is_user_charge_standard`        int,
+    `is_user_charge_premium`         int,
+    `user_charge_type` Nullable(varchar(50)),
+    `is_chat_intercepted`            int,
+    `is_create_bot_intercepted`      int,
+    `is_user_renew`                  int,
+    `is_user_over_range`             int,
+    `user_over_type` Nullable(varchar(50)),
+    `is_user_over_type_bot_creation` int,
+    `is_user_over_type_chat`         int,
+    `create_bot_count` Nullable(int),
+    `total_tokens` Nullable(bigint),
+    `input_tokens` Nullable(bigint),
+    `output_tokens` Nullable(bigint)
+    ) ENGINE = ReplacingMergeTree()
+    order by (stat_date, uid)
+    SETTINGS old_parts_lifetime = 1;
+
+-----------------------------------------------
 insert into table middle_table.mona_user_info_display
 select to_date(t1.stat_date, 'yyyyMMdd') stat_date,
        t1.uid,
@@ -110,4 +208,3 @@ from (select stat_date,
 where is_active_user = 1
 order by stat_date, t1.uid;
 
-"
